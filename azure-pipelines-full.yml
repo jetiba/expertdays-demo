@@ -5,69 +5,69 @@ variables:
 - group: expertdays-vg
 
 stages:
-- stage: Build
-  displayName: Build stage
-  jobs:
-  - job: Build
-    displayName: Build Container Images
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'azureregistry'
-        repository: 'bikes'
-        command: 'buildAndPush'
-        Dockerfile: '**/samples/BikeSharingApp/Bikes/Dockerfile'
-      displayName: 'Build Bikes Docker Image'
+# - stage: Build
+#   displayName: Build stage
+#   jobs:
+#   - job: Build
+#     displayName: Build Container Images
+#     pool:
+#       vmImage: 'ubuntu-latest'
+#     steps:
+#     - task: Docker@2
+#       inputs:
+#         containerRegistry: 'azureregistry'
+#         repository: 'bikes'
+#         command: 'buildAndPush'
+#         Dockerfile: '**/samples/BikeSharingApp/Bikes/Dockerfile'
+#       displayName: 'Build Bikes Docker Image'
     
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'azureregistry'
-        repository: 'bikesharingweb'
-        command: 'buildAndPush'
-        Dockerfile: '**/samples/BikeSharingApp/BikeSharingWeb/Dockerfile'
-      displayName: 'Build BikeSharingWeb Docker Image'
+#     - task: Docker@2
+#       inputs:
+#         containerRegistry: 'azureregistry'
+#         repository: 'bikesharingweb'
+#         command: 'buildAndPush'
+#         Dockerfile: '**/samples/BikeSharingApp/BikeSharingWeb/Dockerfile'
+#       displayName: 'Build BikeSharingWeb Docker Image'
     
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'azureregistry'
-        repository: 'billing'
-        command: 'buildAndPush'
-        Dockerfile: '**/samples/BikeSharingApp/Billing/Dockerfile'
-      displayName: 'Build Billing Docker Image'
+#     - task: Docker@2
+#       inputs:
+#         containerRegistry: 'azureregistry'
+#         repository: 'billing'
+#         command: 'buildAndPush'
+#         Dockerfile: '**/samples/BikeSharingApp/Billing/Dockerfile'
+#       displayName: 'Build Billing Docker Image'
     
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'azureregistry'
-        repository: 'gateway'
-        command: 'buildAndPush'
-        Dockerfile: '**/samples/BikeSharingApp/Gateway/Dockerfile'
-      displayName: 'Build Gateway Docker Image'
+#     - task: Docker@2
+#       inputs:
+#         containerRegistry: 'azureregistry'
+#         repository: 'gateway'
+#         command: 'buildAndPush'
+#         Dockerfile: '**/samples/BikeSharingApp/Gateway/Dockerfile'
+#       displayName: 'Build Gateway Docker Image'
 
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'azureregistry'
-        repository: 'populatedatabase'
-        command: 'buildAndPush'
-        Dockerfile: '**/samples/BikeSharingApp/PopulateDatabase/Dockerfile'
-      displayName: 'Build PopulateDatabase Docker Image'
+#     - task: Docker@2
+#       inputs:
+#         containerRegistry: 'azureregistry'
+#         repository: 'populatedatabase'
+#         command: 'buildAndPush'
+#         Dockerfile: '**/samples/BikeSharingApp/PopulateDatabase/Dockerfile'
+#       displayName: 'Build PopulateDatabase Docker Image'
 
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'azureregistry'
-        repository: 'reservation'
-        command: 'buildAndPush'
-        Dockerfile: '**/samples/BikeSharingApp/Reservation/Dockerfile'
-      displayName: 'Build Reservation Docker Image'
+#     - task: Docker@2
+#       inputs:
+#         containerRegistry: 'azureregistry'
+#         repository: 'reservation'
+#         command: 'buildAndPush'
+#         Dockerfile: '**/samples/BikeSharingApp/Reservation/Dockerfile'
+#       displayName: 'Build Reservation Docker Image'
 
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'azureregistry'
-        repository: 'reservationengine'
-        command: 'buildAndPush'
-        Dockerfile: '**/samples/BikeSharingApp/ReservationEngine/Dockerfile'
-      displayName: 'Build ReservationEngine Docker Image'
+#     - task: Docker@2
+#       inputs:
+#         containerRegistry: 'azureregistry'
+#         repository: 'reservationengine'
+#         command: 'buildAndPush'
+#         Dockerfile: '**/samples/BikeSharingApp/ReservationEngine/Dockerfile'
+#       displayName: 'Build ReservationEngine Docker Image'
 
 - stage: Deploy
   displayName: Deploy stage
@@ -91,9 +91,7 @@ stages:
               inlineScript: |
                 az aks get-credentials -n $(AKS_CLUSTER_NAME) -g $(RESOURCE_GROUP_NAME)
 
-                ls
-
-                helm dependency update samples/BikeSharingApp/charts
+                pwd
                 
                 echo "helm repo add && helm repo update"
                 helm repo add stable https://charts.helm.sh/stable
@@ -102,7 +100,7 @@ stages:
                 echo ""
                 echo "helm install traefik ingress controller"
                 helm install "bikesharing-traefik" stable/traefik \
-                  --namespace $CLUSTER_NAMESPACE --create-namespace \ 
+                  --namespace $(CLUSTER_NAMESPACE) --create-namespace \ 
                   --set kubernetes.ingressClass=traefik \
                   --set fullnameOverride=bikesharing-traefik \
                   --set rbac.enabled=true \
@@ -113,13 +111,13 @@ stages:
                 echo "Waiting for BikeSharing ingress Public IP to be assigned..."
                 while [ -z "$PUBLICIP" ]; do
                   sleep 5
-                  PUBLICIP=$(kubectl get svc -n $CLUSTER_NAMESPACE bikesharing-traefik -o jsonpath={.status.loadBalancer.ingress[0].ip})
+                  PUBLICIP=$(kubectl get svc -n $(CLUSTER_NAMESPACE) bikesharing-traefik -o jsonpath={.status.loadBalancer.ingress[0].ip})
                 
                 echo ""
                 echo "Install applications in the cluster"
                 helm install bikesharingapp samples/BikeSharingApp/charts \
-                  --set bikesharingweb.ingress.hosts={$CLUSTER_NAMESPACE.bikesharingweb.$PUBLICIP.nip.io} \
-                  --set gateway.ingress.hosts={$CLUSTER_NAMESPACE.gateway.$PUBLICIP.nip.io} \
+                  --set bikesharingweb.ingress.hosts={$(CLUSTER_NAMESPACE).bikesharingweb.$PUBLICIP.nip.io} \
+                  --set gateway.ingress.hosts={$(CLUSTER_NAMESPACE).gateway.$PUBLICIP.nip.io} \
                   --set bikesharingweb.ingress.annotations."kubernetes\.io/ingress\.class"=traefik \
                   --set gateway.ingress.annotations."kubernetes\.io/ingress\.class"=traefik \
                   --set bikes.image.repository expertdaysregistry.azurecr.io/bikes 
@@ -139,7 +137,7 @@ stages:
                   --set bikesharingweb.image.repository expertdaysregistry.azurecr.io/bikesharingweb 
                   --set bikesharingweb.image.tag $(Build.BuildId)
                   --dependency-update \
-                  --namespace $CLUSTER_NAMESPACE \
+                  --namespace $(CLUSTER_NAMESPACE) \
                   --timeout 9m \
                   --atomic --debug
               workingDirectory: '$(System.DefaultWorkingDirectory)'
