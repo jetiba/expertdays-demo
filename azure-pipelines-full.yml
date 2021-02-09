@@ -124,22 +124,22 @@ stages:
                   --set gateway.ingress.hosts={$(CLUSTER_NAMESPACE).gateway.$PUBLICIP.nip.io} \
                   --set bikesharingweb.ingress.annotations."kubernetes\.io/ingress\.class"=traefik \
                   --set gateway.ingress.annotations."kubernetes\.io/ingress\.class"=traefik \
-                  --set bikes.image.repository expertdaysregistry.azurecr.io/bikes \
-                  --set bikes.image.tag $(Build.BuildId) \
-                  --set billing.image.repository expertdaysregistry.azurecr.io/billing \
-                  --set billing.image.tag $(Build.BuildId) \
-                  --set gateway.image.repository expertdaysregistry.azurecr.io/gateway \
-                  --set gateway.image.tag $(Build.BuildId) \
-                  --set reservation.image.repository expertdaysregistry.azurecr.io/reservation \
-                  --set reservation.image.tag $(Build.BuildId) \
-                  --set users.image.repository expertdaysregistry.azurecr.io/users \
-                  --set users.image.tag $(Build.BuildId) \
-                  --set reservationengine.image.repository expertdaysregistry.azurecr.io/reservationengine \
-                  --set reservationengine.image.tag $(Build.BuildId) \
-                  --set populatedatabase.image.repository expertdaysregistry.azurecr.io/populatedatabase \
-                  --set populatedatabase.image.tag $(Build.BuildId) \
-                  --set bikesharingweb.image.repository expertdaysregistry.azurecr.io/bikesharingweb \
-                  --set bikesharingweb.image.tag $(Build.BuildId) \
+                  --set bikes.image.repository=expertdaysregistry.azurecr.io/bikes \
+                  --set bikes.image.tag=$(Build.BuildId) \
+                  --set billing.image.repository=expertdaysregistry.azurecr.io/billing \
+                  --set billing.image.tag=$(Build.BuildId) \
+                  --set gateway.image.repository=expertdaysregistry.azurecr.io/gateway \
+                  --set gateway.image.tag=$(Build.BuildId) \
+                  --set reservation.image.repository=expertdaysregistry.azurecr.io/reservation \
+                  --set reservation.image.tag=$(Build.BuildId) \
+                  --set users.image.repository=expertdaysregistry.azurecr.io/users \
+                  --set users.image.tag=$(Build.BuildId) \
+                  --set reservationengine.image.repository=expertdaysregistry.azurecr.io/reservationengine \
+                  --set reservationengine.image.tag=$(Build.BuildId) \
+                  --set populatedatabase.image.repository=expertdaysregistry.azurecr.io/populatedatabase \
+                  --set populatedatabase.image.tag=$(Build.BuildId) \
+                  --set bikesharingweb.image.repository=expertdaysregistry.azurecr.io/bikesharingweb \
+                  --set bikesharingweb.image.tag=$(Build.BuildId) \
                   --namespace $(CLUSTER_NAMESPACE) \
                   --timeout 9m \
                   --atomic --install
