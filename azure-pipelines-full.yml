@@ -100,7 +100,7 @@ stages:
                 echo ""
                 echo "helm install traefik ingress controller"
                 helm install "bikesharing-traefik" stable/traefik \
-                  --namespace $(CLUSTER_NAMESPACE) --create-namespace \ 
+                  --namespace $(CLUSTER_NAMESPACE) --create-namespace \
                   --set kubernetes.ingressClass=traefik \
                   --set fullnameOverride=bikesharing-traefik \
                   --set rbac.enabled=true \
