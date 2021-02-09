@@ -81,6 +81,7 @@ stages:
       runOnce:
         deploy:
           steps:
+          - checkout: self
           - task: AzureCLI@1
             displayName: Deploy App to the Cluster
             inputs:
