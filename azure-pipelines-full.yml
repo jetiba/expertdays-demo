@@ -92,52 +92,53 @@ stages:
                 az aks get-credentials -n $(AKS_CLUSTER_NAME) -g $(RESOURCE_GROUP_NAME)
 
                 pwd
-                
+
                 echo "helm repo add && helm repo update"
                 helm repo add stable https://charts.helm.sh/stable
                 helm repo update
 
                 echo ""
                 echo "helm install traefik ingress controller"
-                helm install "bikesharing-traefik" stable/traefik \
+                helm upgrade "bikesharing-traefik" stable/traefik \
                   --namespace $(CLUSTER_NAMESPACE) --create-namespace \
                   --set kubernetes.ingressClass=traefik \
                   --set fullnameOverride=bikesharing-traefik \
                   --set rbac.enabled=true \
                   --set kubernetes.ingressEndpoint.useDefaultPublishedService=true \
-                  --version 1.85.0 --debug
+                  --version 1.85.0 --install
 
                 echo ""
                 echo "Waiting for BikeSharing ingress Public IP to be assigned..."
                 while [ -z "$PUBLICIP" ]; do
                   sleep 5
                   PUBLICIP=$(kubectl get svc -n $(CLUSTER_NAMESPACE) bikesharing-traefik -o jsonpath={.status.loadBalancer.ingress[0].ip})
-                
+                done
+
                 echo ""
                 echo "Install applications in the cluster"
-                helm install bikesharingapp samples/BikeSharingApp/charts \
+                helm upgrade bikesharingapp samples/BikeSharingApp/charts \
                   --set bikesharingweb.ingress.hosts={$(CLUSTER_NAMESPACE).bikesharingweb.$PUBLICIP.nip.io} \
                   --set gateway.ingress.hosts={$(CLUSTER_NAMESPACE).gateway.$PUBLICIP.nip.io} \
                   --set bikesharingweb.ingress.annotations."kubernetes\.io/ingress\.class"=traefik \
                   --set gateway.ingress.annotations."kubernetes\.io/ingress\.class"=traefik \
-                  --set bikes.image.repository expertdaysregistry.azurecr.io/bikes 
-                  --set bikes.image.tag $(Build.BuildId)
-                  --set billing.image.repository expertdaysregistry.azurecr.io/billing 
-                  --set billing.image.tag $(Build.BuildId)
-                  --set gateway.image.repository expertdaysregistry.azurecr.io/gateway 
-                  --set gateway.image.tag $(Build.BuildId)
-                  --set reservation.image.repository expertdaysregistry.azurecr.io/reservation 
-                  --set reservation.image.tag $(Build.BuildId)
-                  --set users.image.repository expertdaysregistry.azurecr.io/users 
-                  --set users.image.tag $(Build.BuildId)
-                  --set reservationengine.image.repository expertdaysregistry.azurecr.io/reservationengine 
-                  --set reservationengine.image.tag $(Build.BuildId)
-                  --set populatedatabase.image.repository expertdaysregistry.azurecr.io/populatedatabase 
-                  --set populatedatabase.image.tag $(Build.BuildId)
-                  --set bikesharingweb.image.repository expertdaysregistry.azurecr.io/bikesharingweb 
-                  --set bikesharingweb.image.tag $(Build.BuildId)
+                  --set bikes.image.repository expertdaysregistry.azurecr.io/bikes \
+                  --set bikes.image.tag $(Build.BuildId) \
+                  --set billing.image.repository expertdaysregistry.azurecr.io/billing \
+                  --set billing.image.tag $(Build.BuildId) \
+                  --set gateway.image.repository expertdaysregistry.azurecr.io/gateway \
+                  --set gateway.image.tag $(Build.BuildId) \
+                  --set reservation.image.repository expertdaysregistry.azurecr.io/reservation \
+                  --set reservation.image.tag $(Build.BuildId) \
+                  --set users.image.repository expertdaysregistry.azurecr.io/users \
+                  --set users.image.tag $(Build.BuildId) \
+                  --set reservationengine.image.repository expertdaysregistry.azurecr.io/reservationengine \
+                  --set reservationengine.image.tag $(Build.BuildId) \
+                  --set populatedatabase.image.repository expertdaysregistry.azurecr.io/populatedatabase \
+                  --set populatedatabase.image.tag $(Build.BuildId) \
+                  --set bikesharingweb.image.repository expertdaysregistry.azurecr.io/bikesharingweb \
+                  --set bikesharingweb.image.tag $(Build.BuildId) \
                   --dependency-update \
                   --namespace $(CLUSTER_NAMESPACE) \
                   --timeout 9m \
-                  --atomic --debug
+                  --atomic --install
               workingDirectory: '$(System.DefaultWorkingDirectory)'
