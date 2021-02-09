@@ -91,6 +91,8 @@ stages:
               inlineScript: |
                 az aks get-credentials -n $(AKS_CLUSTER_NAME) -g $(RESOURCE_GROUP_NAME)
 
+                ls
+
                 helm dependency update samples/BikeSharingApp/charts
                 
                 echo "helm repo add && helm repo update"
