@@ -1,6 +1,9 @@
 trigger:
   none
 
+variables:
+- group: expertdays-vg
+
 stages:
 - stage: Build
   displayName: Build stage
