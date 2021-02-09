@@ -69,6 +69,14 @@ stages:
         Dockerfile: '**/samples/BikeSharingApp/ReservationEngine/Dockerfile'
       displayName: 'Build ReservationEngine Docker Image'
 
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'azureregistry'
+        repository: 'users'
+        command: 'buildAndPush'
+        Dockerfile: '**/samples/BikeSharingApp/Users/Dockerfile'
+      displayName: 'Build Users Docker Image'
+
 - stage: Deploy
   displayName: Deploy stage
   jobs:
