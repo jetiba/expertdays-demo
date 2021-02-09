@@ -119,7 +119,7 @@ stages:
 
                 echo ""
                 echo "Install applications in the cluster"
-                helm upgrade bikesharingapp samples/BikeSharingApp/charts \
+                helm upgrade "bikesharingapp" samples/BikeSharingApp/charts \
                   --set bikesharingweb.ingress.hosts={$(CLUSTER_NAMESPACE).bikesharingweb.$PUBLICIP.nip.io} \
                   --set gateway.ingress.hosts={$(CLUSTER_NAMESPACE).gateway.$PUBLICIP.nip.io} \
                   --set bikesharingweb.ingress.annotations."kubernetes\.io/ingress\.class"=traefik \
