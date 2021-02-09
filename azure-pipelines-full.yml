@@ -114,6 +114,8 @@ stages:
                   PUBLICIP=$(kubectl get svc -n $(CLUSTER_NAMESPACE) bikesharing-traefik -o jsonpath={.status.loadBalancer.ingress[0].ip})
                 done
 
+                helm dependency update samples/BikeSharingApp/charts
+
                 echo ""
                 echo "Install applications in the cluster"
                 helm upgrade bikesharingapp samples/BikeSharingApp/charts \
@@ -137,7 +139,6 @@ stages:
                   --set populatedatabase.image.tag $(Build.BuildId) \
                   --set bikesharingweb.image.repository expertdaysregistry.azurecr.io/bikesharingweb \
                   --set bikesharingweb.image.tag $(Build.BuildId) \
-                  --dependency-update \
                   --namespace $(CLUSTER_NAMESPACE) \
                   --timeout 9m \
                   --atomic --install
