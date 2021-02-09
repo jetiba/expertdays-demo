@@ -1,0 +1,19 @@
+trigger:
+  none
+
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:
+  - job: Build
+    displayName: Build job
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'azureregistry'
+        repository: 'bikes'
+        command: 'buildAndPush'
+        Dockerfile: '**/samples/BikeSharingApp/Bikes/Dockerfile'
+      displayName: 'Build Docker Image'
