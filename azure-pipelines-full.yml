@@ -19,7 +19,7 @@ stages:
         repository: 'bikes'
         command: 'buildAndPush'
         Dockerfile: '**/samples/BikeSharingApp/Bikes/Dockerfile'
-      displayName: 'Build Docker Image'
+      displayName: 'Build Bikes Docker Image'
     
     - task: Docker@2
       inputs:
@@ -27,7 +27,7 @@ stages:
         repository: 'bikesharingweb'
         command: 'buildAndPush'
         Dockerfile: '**/samples/BikeSharingApp/BikeSharingWeb/Dockerfile'
-      displayName: 'Build Docker Image'
+      displayName: 'Build BikeSharingWeb Docker Image'
     
     - task: Docker@2
       inputs:
@@ -35,7 +35,7 @@ stages:
         repository: 'billing'
         command: 'buildAndPush'
         Dockerfile: '**/samples/BikeSharingApp/Billing/Dockerfile'
-      displayName: 'Build Docker Image'
+      displayName: 'Build Billing Docker Image'
     
     - task: Docker@2
       inputs:
@@ -43,7 +43,7 @@ stages:
         repository: 'gateway'
         command: 'buildAndPush'
         Dockerfile: '**/samples/BikeSharingApp/Gateway/Dockerfile'
-      displayName: 'Build Docker Image'
+      displayName: 'Build Gateway Docker Image'
 
     - task: Docker@2
       inputs:
@@ -51,7 +51,7 @@ stages:
         repository: 'populatedatabase'
         command: 'buildAndPush'
         Dockerfile: '**/samples/BikeSharingApp/PopulateDatabase/Dockerfile'
-      displayName: 'Build Docker Image'
+      displayName: 'Build PopulateDatabase Docker Image'
 
     - task: Docker@2
       inputs:
@@ -59,7 +59,7 @@ stages:
         repository: 'reservation'
         command: 'buildAndPush'
         Dockerfile: '**/samples/BikeSharingApp/Reservation/Dockerfile'
-      displayName: 'Build Docker Image'
+      displayName: 'Build Reservation Docker Image'
 
     - task: Docker@2
       inputs:
@@ -67,7 +67,7 @@ stages:
         repository: 'reservationengine'
         command: 'buildAndPush'
         Dockerfile: '**/samples/BikeSharingApp/ReservationEngine/Dockerfile'
-      displayName: 'Build Docker Image'
+      displayName: 'Build ReservationEngine Docker Image'
 
 - stage: Deploy
   displayName: Deploy stage
