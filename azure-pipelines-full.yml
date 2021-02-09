@@ -86,7 +86,7 @@ stages:
               scriptLocation: 'inlineScript'
               addSpnToEnvironment: true
               inlineScript: |
-                az aks get-credentials -n $(AKS_CLUSTER_NAME) -g $(AKS_CLUSTER_RG)
+                az aks get-credentials -n $(AKS_CLUSTER_NAME) -g $(RESOURCE_GROUP_NAME)
 
                 helm dependency update samples/BikeSharingApp/charts
                 
@@ -97,7 +97,7 @@ stages:
                 echo ""
                 echo "helm install traefik ingress controller"
                 helm install "bikesharing-traefik" stable/traefik \
-                  --namespace $BIKE_NS --create-namespace \ 
+                  --namespace $CLUSTER_NAMESPACE --create-namespace \ 
                   --set kubernetes.ingressClass=traefik \
                   --set fullnameOverride=bikesharing-traefik \
                   --set rbac.enabled=true \
@@ -108,13 +108,13 @@ stages:
                 echo "Waiting for BikeSharing ingress Public IP to be assigned..."
                 while [ -z "$PUBLICIP" ]; do
                   sleep 5
-                  PUBLICIP=$(kubectl get svc -n $BIKENS $INGRESSNAME -o jsonpath={.status.loadBalancer.ingress[0].ip})
+                  PUBLICIP=$(kubectl get svc -n $CLUSTER_NAMESPACE bikesharing-traefik -o jsonpath={.status.loadBalancer.ingress[0].ip})
                 
                 echo ""
                 echo "Install applications in the cluster"
                 helm install bikesharingapp samples/BikeSharingApp/charts \
-                  --set bikesharingweb.ingress.hosts={$BIKENS.bikesharingweb.$PUBLICIP.nip.io} \
-                  --set gateway.ingress.hosts={$BIKENS.gateway.$PUBLICIP.nip.io} \
+                  --set bikesharingweb.ingress.hosts={$CLUSTER_NAMESPACE.bikesharingweb.$PUBLICIP.nip.io} \
+                  --set gateway.ingress.hosts={$CLUSTER_NAMESPACE.gateway.$PUBLICIP.nip.io} \
                   --set bikesharingweb.ingress.annotations."kubernetes\.io/ingress\.class"=traefik \
                   --set gateway.ingress.annotations."kubernetes\.io/ingress\.class"=traefik \
                   --set bikes.image.repository expertdaysregistry.azurecr.io/bikes 
@@ -134,7 +134,7 @@ stages:
                   --set bikesharingweb.image.repository expertdaysregistry.azurecr.io/bikesharingweb 
                   --set bikesharingweb.image.tag $(Build.BuildId)
                   --dependency-update \
-                  --namespace $BIKENS \
+                  --namespace $CLUSTER_NAMESPACE \
                   --timeout 9m \
                   --atomic --debug
               workingDirectory: '$(System.DefaultWorkingDirectory)'
