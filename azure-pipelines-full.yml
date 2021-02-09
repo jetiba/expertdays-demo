@@ -76,7 +76,7 @@ stages:
     displayName: Deploy job
     environment: test
     pool:
-      name: 'ubuntu-latest'
+      vmImage: 'ubuntu-latest'
     strategy:
       runOnce:
         deploy:
