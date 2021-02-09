@@ -5,69 +5,69 @@ variables:
 - group: expertdays-vg
 
 stages:
-# - stage: Build
-#   displayName: Build stage
-#   jobs:
-#   - job: Build
-#     displayName: Build Container Images
-#     pool:
-#       vmImage: 'ubuntu-latest'
-#     steps:
-#     - task: Docker@2
-#       inputs:
-#         containerRegistry: 'azureregistry'
-#         repository: 'bikes'
-#         command: 'buildAndPush'
-#         Dockerfile: '**/samples/BikeSharingApp/Bikes/Dockerfile'
-#       displayName: 'Build Bikes Docker Image'
+- stage: Build
+  displayName: Build stage
+  jobs:
+  - job: Build
+    displayName: Build Container Images
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'azureregistry'
+        repository: 'bikes'
+        command: 'buildAndPush'
+        Dockerfile: '**/samples/BikeSharingApp/Bikes/Dockerfile'
+      displayName: 'Build Bikes Docker Image'
     
-#     - task: Docker@2
-#       inputs:
-#         containerRegistry: 'azureregistry'
-#         repository: 'bikesharingweb'
-#         command: 'buildAndPush'
-#         Dockerfile: '**/samples/BikeSharingApp/BikeSharingWeb/Dockerfile'
-#       displayName: 'Build BikeSharingWeb Docker Image'
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'azureregistry'
+        repository: 'bikesharingweb'
+        command: 'buildAndPush'
+        Dockerfile: '**/samples/BikeSharingApp/BikeSharingWeb/Dockerfile'
+      displayName: 'Build BikeSharingWeb Docker Image'
     
-#     - task: Docker@2
-#       inputs:
-#         containerRegistry: 'azureregistry'
-#         repository: 'billing'
-#         command: 'buildAndPush'
-#         Dockerfile: '**/samples/BikeSharingApp/Billing/Dockerfile'
-#       displayName: 'Build Billing Docker Image'
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'azureregistry'
+        repository: 'billing'
+        command: 'buildAndPush'
+        Dockerfile: '**/samples/BikeSharingApp/Billing/Dockerfile'
+      displayName: 'Build Billing Docker Image'
     
-#     - task: Docker@2
-#       inputs:
-#         containerRegistry: 'azureregistry'
-#         repository: 'gateway'
-#         command: 'buildAndPush'
-#         Dockerfile: '**/samples/BikeSharingApp/Gateway/Dockerfile'
-#       displayName: 'Build Gateway Docker Image'
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'azureregistry'
+        repository: 'gateway'
+        command: 'buildAndPush'
+        Dockerfile: '**/samples/BikeSharingApp/Gateway/Dockerfile'
+      displayName: 'Build Gateway Docker Image'
 
-#     - task: Docker@2
-#       inputs:
-#         containerRegistry: 'azureregistry'
-#         repository: 'populatedatabase'
-#         command: 'buildAndPush'
-#         Dockerfile: '**/samples/BikeSharingApp/PopulateDatabase/Dockerfile'
-#       displayName: 'Build PopulateDatabase Docker Image'
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'azureregistry'
+        repository: 'populatedatabase'
+        command: 'buildAndPush'
+        Dockerfile: '**/samples/BikeSharingApp/PopulateDatabase/Dockerfile'
+      displayName: 'Build PopulateDatabase Docker Image'
 
-#     - task: Docker@2
-#       inputs:
-#         containerRegistry: 'azureregistry'
-#         repository: 'reservation'
-#         command: 'buildAndPush'
-#         Dockerfile: '**/samples/BikeSharingApp/Reservation/Dockerfile'
-#       displayName: 'Build Reservation Docker Image'
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'azureregistry'
+        repository: 'reservation'
+        command: 'buildAndPush'
+        Dockerfile: '**/samples/BikeSharingApp/Reservation/Dockerfile'
+      displayName: 'Build Reservation Docker Image'
 
-#     - task: Docker@2
-#       inputs:
-#         containerRegistry: 'azureregistry'
-#         repository: 'reservationengine'
-#         command: 'buildAndPush'
-#         Dockerfile: '**/samples/BikeSharingApp/ReservationEngine/Dockerfile'
-#       displayName: 'Build ReservationEngine Docker Image'
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'azureregistry'
+        repository: 'reservationengine'
+        command: 'buildAndPush'
+        Dockerfile: '**/samples/BikeSharingApp/ReservationEngine/Dockerfile'
+      displayName: 'Build ReservationEngine Docker Image'
 
 - stage: Deploy
   displayName: Deploy stage
