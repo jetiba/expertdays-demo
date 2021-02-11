@@ -19,6 +19,7 @@ stages:
             increments: [10,20]
             preDeploy:
               steps:
+              - checkout: self
               - script: initialize, bake from chart
               - task: KubernetesManifest@0
                 name: bake # important, to be referenced later.
