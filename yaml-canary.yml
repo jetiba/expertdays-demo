@@ -35,12 +35,11 @@ stages:
               steps: 
               - task: KubernetesManifest@0
                 inputs:
-                  action: $(strategy.action)
+                  action: 'deploy'
                   kubernetesServiceConnection: 'miferrac-expertdaysakscluster-miferrac-1613077274355'
                   namespace: 'miferrac'
-                  strategy: $(strategy.name)
+                  strategy: 'canary'
                   percentage: '$(strategy.increment)'
-                  manifests: $(bake.manifestsBundle)
                 displayName: deploy app updates
             postRouteTraffic: 
               steps:
@@ -52,7 +51,19 @@ stages:
             on: 
               failure:
                 steps:
-                - script: echo clean-up, rollback with manifest task
+                  - task: KubernetesManifest@0
+                    inputs:
+                      action: 'reject'
+                      kubernetesServiceConnection: 'miferrac-expertdaysakscluster-miferrac-1613077274355'
+                      namespace: 'miferrac'
+                      strategy: 'canary'
+                      manifests: '$(bake.manifestsBundle)'
               success:
                 steps:
-                - script: echo checks passed, promote with manifest task
+                  - task: KubernetesManifest@0
+                    inputs:
+                      action: 'promote'
+                      kubernetesServiceConnection: 'miferrac-expertdaysakscluster-miferrac-1613077274355'
+                      namespace: 'miferrac'
+                      strategy: 'canary'
+                      manifests: '$(bake.manifestsBundle)'
