@@ -12,7 +12,6 @@ stages:
     displayName: Deployment to AKS cluster (miferrac ns)
     jobs:
       - deployment: canaryDeployment
-        environment: miferrac
         displayName: Canary Deployment
         strategy:
           canary:
