@@ -1,0 +1,51 @@
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/kubernetes/deployment-strategies?view=azure-devops#canary-deployments-for-kubernetes
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/kubernetes/bake?view=azure-devops
+trigger: none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+  - stage: Deployment
+    displayName: Deployment to AKS cluster (miferrac ns)
+    jobs:
+      - deployment: canaryDeployment
+        environment: miferrac
+        displayName: Canary Deployment
+        strategy:
+          canary:
+            increments: [10,20]
+            preDeploy:
+              steps:
+              - script: initialize, bake from chart
+              
+            deploy:
+              steps: 
+              - script: echo deploy updates
+              - task: KubernetesManifest@0
+                inputs:
+                  action: $(strategy.action)
+                  kubernetesServiceConnection: 'miferrac-expertdaysakscluster-miferrac-1613077274355'
+                  namespace: 'miferrac'
+                  strategy: $(strategy.name)
+                  percentage: '$(strategy.increment)'
+                  manifests: 'asd.yml'
+              - task: KubernetesManifest@0
+                inputs:
+                  action: 'deploy'
+                  containers: |
+                    a
+                    b
+                    c
+                    d
+            postRouteTraffic: 
+              pool: server 
+              steps:
+              - script: echo monitor application health
+            on: 
+              failure:
+                steps:
+                - script: echo clean-up, rollback
+              success:
+                steps:
+                - script: echo checks passed, notify
