@@ -1,5 +1,7 @@
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/kubernetes/deployment-strategies?view=azure-devops#canary-deployments-for-kubernetes
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/kubernetes/bake?view=azure-devops
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/deploy/kubernetes-manifest?view=azure-devops 
+# end-to-end https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/kubernetes/canary-demo?view=azure-devops&tabs=yaml 
 trigger: none
 
 pool:
@@ -18,7 +20,16 @@ stages:
             preDeploy:
               steps:
               - script: initialize, bake from chart
-              
+              - task: KubernetesManifest@0
+                name: bake # important, to be referenced later.
+                inputs:
+                  action: 'bake'
+                  namespace: 'miferrac'
+                  helmChart: 'samples/BikeSharingApp/charts'
+                  releaseName: 'miferrac-bike'
+                  overrides: |
+                    bikes.image.tag $(Build.BuildId)
+                    billing.image.tag $(Build.BuildId)
             deploy:
               steps: 
               - script: echo deploy updates
@@ -29,23 +40,19 @@ stages:
                   namespace: 'miferrac'
                   strategy: $(strategy.name)
                   percentage: '$(strategy.increment)'
-                  manifests: 'asd.yml'
-              - task: KubernetesManifest@0
-                inputs:
-                  action: 'deploy'
-                  containers: |
-                    a
-                    b
-                    c
-                    d
+                  manifests: $(bake.manifestsBundle)
             postRouteTraffic: 
               pool: server 
               steps:
               - script: echo monitor application health
+              - task: ManualValidation@0
+                inputs:
+                  notifyUsers: 'miferrac@microsoft.com'
+                  instructions: 'check the telemetry'
             on: 
               failure:
                 steps:
-                - script: echo clean-up, rollback
+                - script: echo clean-up, rollback with manifest task
               success:
                 steps:
-                - script: echo checks passed, notify
+                - script: echo checks passed, promote with manifest task
