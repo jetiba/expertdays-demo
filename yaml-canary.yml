@@ -27,9 +27,6 @@ stages:
                   namespace: 'miferrac'
                   helmChart: 'samples/BikeSharingApp/charts'
                   releaseName: 'miferrac-bike'
-                  overrides: |
-                    bikes.image.tag $(Build.BuildId)
-                    billing.image.tag $(Build.BuildId)
                 displayName: bake helm chart
             deploy:
               steps: 
