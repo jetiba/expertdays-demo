@@ -20,7 +20,6 @@ stages:
             preDeploy:
               steps:
               - checkout: self
-              - script: initialize, bake from chart
               - task: KubernetesManifest@0
                 name: bake # important, to be referenced later.
                 inputs:
@@ -31,9 +30,9 @@ stages:
                   overrides: |
                     bikes.image.tag $(Build.BuildId)
                     billing.image.tag $(Build.BuildId)
+                displayName: bake helm chart
             deploy:
               steps: 
-              - script: echo deploy updates
               - task: KubernetesManifest@0
                 inputs:
                   action: $(strategy.action)
@@ -42,14 +41,14 @@ stages:
                   strategy: $(strategy.name)
                   percentage: '$(strategy.increment)'
                   manifests: $(bake.manifestsBundle)
+                displayName: deploy app updates
             postRouteTraffic: 
-              pool: server 
               steps:
-              - script: echo monitor application health
               - task: ManualValidation@0
                 inputs:
                   notifyUsers: 'miferrac@microsoft.com'
                   instructions: 'check the telemetry'
+                displayName: Validate
             on: 
               failure:
                 steps:
