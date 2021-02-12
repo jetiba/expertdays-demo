@@ -74,7 +74,7 @@ stages:
                   targetPath: '$(Pipeline.Workspace)'
               - script:  mv baked-template*.yaml baked-template.yaml
                 workingDirectory: $(Pipeline.Workspace)/helmBakedChart/
-              - script: cat $(Pipeline.Workspace)/helmBakedChart/
+              - script: cat $(Pipeline.Workspace)/helmBakedChart/baked-template.yaml
               - task: KubernetesManifest@0
                 enabled: false
                 inputs:
