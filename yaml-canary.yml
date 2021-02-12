@@ -16,7 +16,7 @@ stages:
         displayName: Canary Deployment
         strategy:
           canary:
-            increments: [10,20]
+            increments: [10]
             preDeploy:
               steps:
               - checkout: self
@@ -70,6 +70,11 @@ stages:
               - script:  mv baked-template*.yaml baked-template.yaml
                 workingDirectory: $(Pipeline.Workspace)/helmBakedChart/
                 displayName: Rename baked chart
+              - task: ManualValidation@0
+                condition: and(success(), eq($(strategy.increment),100) )
+                inputs:
+                  notifyUsers: 'miferrac@microsoft.com'
+                  instructions: 'sdfg'
               - script: cat $(Pipeline.Workspace)/helmBakedChart/baked-template.yaml
                 displayName: Fake Deployment
               - task: KubernetesManifest@0
