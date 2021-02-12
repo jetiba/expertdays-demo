@@ -20,6 +20,13 @@ stages:
             preDeploy:
               steps:
               - checkout: self
+              - task: HelmDeploy@0
+                inputs:
+                  connectionType: 'Kubernetes Service Connection'
+                  kubernetesServiceConnection: 'miferrac-expertdaysakscluster-miferrac-1613077274355'
+                  namespace: 'miferrac'
+                  command: 'ls'
+                  publishPipelineMetadata: false
               - task: KubernetesManifest@0
                 name: bake # important, to be referenced later.
                 inputs:
