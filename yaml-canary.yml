@@ -20,6 +20,8 @@ stages:
             preDeploy:
               steps:
               - checkout: self
+              
+              # https://stackoverflow.com/questions/59210148/error-found-in-chart-yaml-but-missing-in-charts-directory-mysql
               - script: |
                   helm dependency update samples/BikeSharingApp/charts
                   
@@ -27,23 +29,8 @@ stages:
                   helm repo add stable https://charts.helm.sh/stable
                   helm repo update
                 workingDirectory: '$(System.DefaultWorkingDirectory)'
-                displayName: help setup
+                displayName: help setup 
 
-              # - task: HelmInstaller@1
-              #   displayName: Helm installer
-              #   inputs: 
-              #     helmVersionToInstall: latest
-              # - task: Kubernetes@1
-              #   inputs:
-              #     connectionType: 'Kubernetes Service Connection'
-              #     kubernetesServiceEndpoint: 'miferrac-expertdaysakscluster-miferrac-1613077274355'
-              #     namespace: 'miferrac'
-              #     command: 'get'
-              #     arguments: 'node'
-              #     secretType: 'dockerRegistry'
-              #     containerRegistryType: 'Azure Container Registry'
-              # - script: helm template ciao samples/BikeSharingApp/charts
-              #   workingDirectory: $(Build.SourcesDirectory)
               - task: KubernetesManifest@0
                 name: bake # important, to be referenced later.
                 inputs:
@@ -52,16 +39,16 @@ stages:
                   helmChart: 'samples/BikeSharingApp/charts'
                   releaseName: 'miferrac-bike'
                   overrides: |
-                    bikesharingweb.ingress.hosts:miferrac.bikesharingweb.publicip.nip.io
-                    gateway.ingress.hosts:miferrac.gateway.publicip.nip.io
-                    bikesharingweb.ingress.annotations."kubernetes.io/ingress.class":traefik
+                    gateway.image.repository:expertdaysregistry.azurecr.io/gateway
+                    gateway.ingress.hosts:{miferrac.gateway.5.6.7.8.nip.io}
                     gateway.ingress.annotations."kubernetes.io/ingress.class":traefik
+                    gateway.image.tag:$(Build.BuildId)
+                    bikesharingweb.ingress.hosts:{miferrac.bikesharingweb.5.6.7.8.nip.io}
+                    bikesharingweb.ingress.annotations."kubernetes.io/ingress.class":traefik
                     bikes.image.repository:expertdaysregistry.azurecr.io/bikes
                     bikes.image.tag:$(Build.BuildId)
                     billing.image.repository:expertdaysregistry.azurecr.io/billing
                     billing.image.tag:$(Build.BuildId)
-                    gateway.image.repository:expertdaysregistry.azurecr.io/gateway
-                    gateway.image.tag:$(Build.BuildId)
                     reservation.image.repository:expertdaysregistry.azurecr.io/reservation
                     reservation.image.tag:$(Build.BuildId)
                     users.image.repository:expertdaysregistry.azurecr.io/users
