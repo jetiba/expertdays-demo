@@ -68,8 +68,10 @@ stages:
                   artifact: 'helmBakedChart'
                   publishLocation: 'pipeline'
             deploy:
-              steps: 
+              steps:
+              - script: echo deploy
               - task: KubernetesManifest@0
+                enabled: false
                 inputs:
                   action: 'deploy'
                   kubernetesServiceConnection: 'miferrac-expertdaysakscluster-miferrac-1613077274355'
