@@ -20,8 +20,14 @@ stages:
             preDeploy:
               steps:
               - checkout: self
-              - script: helm dependency update
-                workingDirectory: samples/BikeSharingApp/charts
+              - script: |
+                  helm dependency update samples/BikeSharingApp/charts
+                  
+                  echo "helm repo add && helm repo update"
+                  helm repo add stable https://charts.helm.sh/stable
+                  helm repo update
+                workingDirectory: '$(System.DefaultWorkingDirectory)'
+                displayName: help setup
 
               # - task: HelmInstaller@1
               #   displayName: Helm installer
