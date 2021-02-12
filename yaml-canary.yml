@@ -70,7 +70,10 @@ stages:
               - script:  mv baked-template*.yaml baked-template.yaml
                 workingDirectory: $(Pipeline.Workspace)/helmBakedChart/
                 displayName: Rename baked chart
+              - script: cat $(Pipeline.Workspace)/helmBakedChart/baked-template.yaml
+                displayName: Fake Deployment
               - task: KubernetesManifest@0
+                enabled: false
                 inputs:
                   action: 'deploy'
                   kubernetesServiceConnection: 'miferrac-expertdaysakscluster-miferrac-1613077274355'
