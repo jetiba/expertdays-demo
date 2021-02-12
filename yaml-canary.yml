@@ -20,13 +20,17 @@ stages:
             preDeploy:
               steps:
               - checkout: self
-              - task: HelmDeploy@0
+              - task: Kubernetes@1
                 inputs:
                   connectionType: 'Kubernetes Service Connection'
-                  kubernetesServiceConnection: 'miferrac-expertdaysakscluster-miferrac-1613077274355'
+                  kubernetesServiceEndpoint: 'miferrac-expertdaysakscluster-miferrac-1613077274355'
                   namespace: 'miferrac'
-                  command: 'ls'
-                  publishPipelineMetadata: false
+                  command: 'get'
+                  arguments: 'node'
+                  secretType: 'dockerRegistry'
+                  containerRegistryType: 'Azure Container Registry'
+              - script: helm template ciao samples/BikeSharingApp/charts
+                workingDirectory: $(Build.SourcesDirectory)
               - task: KubernetesManifest@0
                 name: bake # important, to be referenced later.
                 inputs:
