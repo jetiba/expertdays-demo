@@ -60,11 +60,9 @@ stages:
                     bikesharingweb.image.repository:expertdaysregistry.azurecr.io/bikesharingweb
                     bikesharingweb.image.tag:$(Build.BuildId)
                 displayName: bake helm chart
-              - script: echo $(bake.manifestsBundle) > manifestBundle.yml
-                workingDirectory: '$(System.DefaultWorkingDirectory)'
               - task: PublishPipelineArtifact@1
                 inputs:
-                  targetPath: '$(System.DefaultWorkingDirectory)/manifestBundle.yml'
+                  targetPath: $(bake.manifestsBundle)
                   artifact: 'helmBakedChart'
                   publishLocation: 'pipeline'
             deploy:
