@@ -69,6 +69,7 @@ stages:
                   namespace: 'miferrac'
                   strategy: 'canary'
                   percentage: '$(strategy.increment)'
+                  manifests: '$(bake.manifestsBundle)'
                 displayName: deploy app updates
             postRouteTraffic: 
               pool: server
