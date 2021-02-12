@@ -20,21 +20,24 @@ stages:
             preDeploy:
               steps:
               - checkout: self
-              - task: HelmInstaller@1
-                displayName: Helm installer
-                inputs: 
-                  helmVersionToInstall: latest
-              - task: Kubernetes@1
-                inputs:
-                  connectionType: 'Kubernetes Service Connection'
-                  kubernetesServiceEndpoint: 'miferrac-expertdaysakscluster-miferrac-1613077274355'
-                  namespace: 'miferrac'
-                  command: 'get'
-                  arguments: 'node'
-                  secretType: 'dockerRegistry'
-                  containerRegistryType: 'Azure Container Registry'
-              - script: helm template ciao samples/BikeSharingApp/charts
-                workingDirectory: $(Build.SourcesDirectory)
+              - script: helm dependency update
+                workingDirectory: samples/BikeSharingApp/charts
+
+              # - task: HelmInstaller@1
+              #   displayName: Helm installer
+              #   inputs: 
+              #     helmVersionToInstall: latest
+              # - task: Kubernetes@1
+              #   inputs:
+              #     connectionType: 'Kubernetes Service Connection'
+              #     kubernetesServiceEndpoint: 'miferrac-expertdaysakscluster-miferrac-1613077274355'
+              #     namespace: 'miferrac'
+              #     command: 'get'
+              #     arguments: 'node'
+              #     secretType: 'dockerRegistry'
+              #     containerRegistryType: 'Azure Container Registry'
+              # - script: helm template ciao samples/BikeSharingApp/charts
+              #   workingDirectory: $(Build.SourcesDirectory)
               - task: KubernetesManifest@0
                 name: bake # important, to be referenced later.
                 inputs:
