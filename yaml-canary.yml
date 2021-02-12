@@ -68,7 +68,11 @@ stages:
             deploy:
               steps:
               - script: echo deploy
-              - download: helmBakedChart
+              - task: DownloadPipelineArtifact@2
+                inputs:
+                  buildType: 'current'
+                  artifactName: 'helmBakedChart'
+                  targetPath: '$(Pipeline.Workspace)'
               - script: cat $(Pipeline.Workspace)/helmBakedChart
               - task: KubernetesManifest@0
                 enabled: false
