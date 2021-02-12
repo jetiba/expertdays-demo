@@ -68,6 +68,8 @@ stages:
             deploy:
               steps:
               - script: echo deploy
+              - download: helmBakedChart
+              - script: cat $(Pipeline.Workspace)/helmBakedChart
               - task: KubernetesManifest@0
                 enabled: false
                 inputs:
@@ -76,7 +78,7 @@ stages:
                   namespace: 'miferrac'
                   strategy: 'canary'
                   percentage: '$(strategy.increment)'
-                  manifests: '$(bake.manifestsBundle)'
+                  manifests: $(Pipeline.Workspace)/helmBakedChart
                 displayName: deploy app updates
             postRouteTraffic: 
               pool: server
