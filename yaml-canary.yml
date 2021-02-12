@@ -67,17 +67,10 @@ stages:
                   publishLocation: 'pipeline'
             deploy:
               steps:
-              # - task: DownloadPipelineArtifact@2
-              #   inputs:
-              #     buildType: 'current'
-              #     artifactName: 'helmBakedChart'
-              #     targetPath: '$(Pipeline.Workspace)'
               - script:  mv baked-template*.yaml baked-template.yaml
                 workingDirectory: $(Pipeline.Workspace)/helmBakedChart/
                 displayName: Rename baked chart
-              # - script: cat $(Pipeline.Workspace)/helmBakedChart/baked-template.yaml
               - task: KubernetesManifest@0
-                enabled: false
                 inputs:
                   action: 'deploy'
                   kubernetesServiceConnection: 'miferrac-expertdaysakscluster-miferrac-1613077274355'
@@ -89,11 +82,14 @@ stages:
             postRouteTraffic: 
               pool: server
               steps:
-              - task: ManualValidation@0
+              - task: Delay@1
                 inputs:
-                  notifyUsers: 'miferrac@microsoft.com'
-                  instructions: 'check the telemetry'
-                displayName: Validate
+                  delayForMinutes: '1'
+              # - task: ManualValidation@0
+              #   inputs:
+              #     notifyUsers: 'miferrac@microsoft.com'
+              #     instructions: 'check the telemetry'
+              #   displayName: Validate
             on: 
               failure:
                 steps:
