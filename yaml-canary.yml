@@ -73,11 +73,7 @@ stages:
               - script:  mv baked-template*.yaml baked-template.yaml
                 workingDirectory: $(Pipeline.Workspace)/helmBakedChart/
                 displayName: Rename baked chart
-              - task: ManualValidation@0
-                condition: and(succeeded(), eq($(strategy.increment),100) )
-                inputs:
-                  notifyUsers: 'miferrac@microsoft.com'
-                  instructions: 'sdfg'
+            
               - script: cat $(Pipeline.Workspace)/helmBakedChart/baked-template.yaml
                 displayName: Fake Deployment
               - task: KubernetesManifest@0
@@ -96,11 +92,11 @@ stages:
               - task: Delay@1
                 inputs:
                   delayForMinutes: '1'
-              # - task: ManualValidation@0
-              #   inputs:
-              #     notifyUsers: 'miferrac@microsoft.com'
-              #     instructions: 'check the telemetry'
-              #   displayName: Validate
+              - task: ManualValidation@0
+                condition: and(succeeded(), eq($(strategy.increment),10) )
+                inputs:
+                  notifyUsers: 'miferrac@microsoft.com'
+                  instructions: 'sdfg'
             on: 
               failure:
                 steps:
