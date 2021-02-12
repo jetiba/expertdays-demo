@@ -67,14 +67,15 @@ stages:
                   publishLocation: 'pipeline'
             deploy:
               steps:
-              - task: DownloadPipelineArtifact@2
-                inputs:
-                  buildType: 'current'
-                  artifactName: 'helmBakedChart'
-                  targetPath: '$(Pipeline.Workspace)'
+              # - task: DownloadPipelineArtifact@2
+              #   inputs:
+              #     buildType: 'current'
+              #     artifactName: 'helmBakedChart'
+              #     targetPath: '$(Pipeline.Workspace)'
               - script:  mv baked-template*.yaml baked-template.yaml
                 workingDirectory: $(Pipeline.Workspace)/helmBakedChart/
-              - script: cat $(Pipeline.Workspace)/helmBakedChart/baked-template.yaml
+                displayName: Rename baked chart
+              # - script: cat $(Pipeline.Workspace)/helmBakedChart/baked-template.yaml
               - task: KubernetesManifest@0
                 enabled: false
                 inputs:
