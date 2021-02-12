@@ -93,7 +93,7 @@ stages:
                 inputs:
                   delayForMinutes: '1'
               - task: ManualValidation@0
-                condition: eq('$(strategy.increment)','10')
+                condition: eq($(strategy.increment),'10')
                 inputs:
                   notifyUsers: 'miferrac@microsoft.com'
                   instructions: 'sdfg'
