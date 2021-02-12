@@ -1,0 +1,19 @@
+variables:
+- name: AKS_CLUSTER_NAME
+  value: expertdaysakscluster
+- name: CLUSTER_NAMESPACE
+  value: miferrac
+- name: CLUSTER_NODE_COUNT
+  value: 3
+- name: CLUSTER_NODE_SIZE
+  value: Standard_D4s_v3
+- name: LOCATION
+  value: West Europe
+- name: RESOURCE_GROUP_NAME
+  value: expertdaysaksdemo
+- name: TF_STATE_RG
+  value: expertdays_tf
+- name: TF_STG_KEY
+  value: expertdaystfkey
+- name: TF_STG_NAME
+  value: expertdaysstgtf
