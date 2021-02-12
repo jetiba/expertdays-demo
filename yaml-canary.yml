@@ -52,8 +52,8 @@ stages:
                   helmChart: 'samples/BikeSharingApp/charts'
                   releaseName: 'miferrac-bike'
                   overrides: |
-                    bikesharingweb.ingress.hosts:miferrac.bikesharingweb.5.5.5.5.nip.io
-                    gateway.ingress.hosts:miferrac.gateway.5.5.5.5.nip.io
+                    bikesharingweb.ingress.hosts:miferrac.bikesharingweb.publicip.nip.io
+                    gateway.ingress.hosts:miferrac.gateway.publicip.nip.io
                     bikesharingweb.ingress.annotations."kubernetes.io/ingress.class":traefik
                     gateway.ingress.annotations."kubernetes.io/ingress.class":traefik
                     bikes.image.repository:expertdaysregistry.azurecr.io/bikes
