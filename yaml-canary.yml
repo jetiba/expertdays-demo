@@ -4,6 +4,9 @@
 # end-to-end https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/kubernetes/canary-demo?view=azure-devops&tabs=yaml 
 trigger: none
 
+variables:
+  - template: .ci/yamlVariables.yml
+
 pool:
   vmImage: 'ubuntu-latest'
 
@@ -71,7 +74,7 @@ stages:
                 workingDirectory: $(Pipeline.Workspace)/helmBakedChart/
                 displayName: Rename baked chart
               - task: ManualValidation@0
-                condition: and(success(), eq($(strategy.increment),100) )
+                condition: and(succeeded(), eq($(strategy.increment),100) )
                 inputs:
                   notifyUsers: 'miferrac@microsoft.com'
                   instructions: 'sdfg'
