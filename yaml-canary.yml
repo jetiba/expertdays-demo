@@ -4,6 +4,10 @@
 # end-to-end https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/kubernetes/canary-demo?view=azure-devops&tabs=yaml 
 trigger: none
 
+parameters:
+  - name: buildInput
+    type: number
+    
 variables:
   - template: .ci/yamlVariables.yml
 
@@ -36,33 +40,15 @@ stages:
 
               - task: KubernetesManifest@0
                 name: bake # important, to be referenced later.
+                displayName: bake helm chart
                 inputs:
                   action: 'bake'
                   namespace: 'miferrac'
-                  helmChart: 'samples/BikeSharingApp/charts'
-                  releaseName: 'miferrac-bike'
+                  helmChart: samples/BikeSharingApp/ReservationEngine/charts/reservationengine
+                  releaseName: 'miferrac-reservationEngine'
                   overrides: |
-                    gateway.image.repository:expertdaysregistry.azurecr.io/gateway
-                    gateway.ingress.hosts:{miferrac.gateway.5.6.7.8.nip.io}
-                    gateway.ingress.annotations."kubernetes\.io/ingress\.class":traefik
-                    gateway.image.tag:$(Build.BuildId)
-                    bikesharingweb.ingress.hosts:{miferrac.bikesharingweb.5.6.7.8.nip.io}
-                    bikesharingweb.ingress.annotations."kubernetes\.io/ingress\.class":traefik
-                    bikes.image.repository:expertdaysregistry.azurecr.io/bikes
-                    bikes.image.tag:$(Build.BuildId)
-                    billing.image.repository:expertdaysregistry.azurecr.io/billing
-                    billing.image.tag:$(Build.BuildId)
-                    reservation.image.repository:expertdaysregistry.azurecr.io/reservation
-                    reservation.image.tag:$(Build.BuildId)
-                    users.image.repository:expertdaysregistry.azurecr.io/users
-                    users.image.tag:$(Build.BuildId)
-                    reservationengine.image.repository:expertdaysregistry.azurecr.io/reservationengine
-                    reservationengine.image.tag:$(Build.BuildId)
-                    populatedatabase.image.repository:expertdaysregistry.azurecr.io/populatedatabase
-                    populatedatabase.image.tag:$(Build.BuildId)
-                    bikesharingweb.image.repository:expertdaysregistry.azurecr.io/bikesharingweb
-                    bikesharingweb.image.tag:$(Build.BuildId)
-                displayName: bake helm chart
+                    reservation.image.repository:phenixita/reservationEngine 
+                    reservation.image.tag:${{buildInput}}
               - task: PublishPipelineArtifact@1
                 inputs:
                   targetPath: $(bake.manifestsBundle)
