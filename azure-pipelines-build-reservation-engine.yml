@@ -21,7 +21,7 @@ stages:
       displayName: Build an image
       inputs:
         containerRegistry: 'DockerHub-phenixita'
-        repository: 'reservationengine'
+        repository: 'phenixita/reservationengine'
         command: 'buildAndPush'
         Dockerfile: 'samples/BikeSharingApp/ReservationEngine/**/Dockerfile'
         tags: '$(tag)'
