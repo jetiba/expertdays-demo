@@ -22,8 +22,7 @@ stages:
         environment: experdaysaks.miferrac
         displayName: Canary Deployment
         strategy:
-          canary:
-            increments: [10]
+          runOnce:
             preDeploy:
               steps:
               - checkout: self
@@ -63,42 +62,41 @@ stages:
               - script: cat $(Pipeline.Workspace)/helmBakedChart/baked-template.yaml
                 displayName: Fake Deployment
               - task: KubernetesManifest@0
-                enabled: false
                 inputs:
                   action: 'deploy'
                   kubernetesServiceConnection: 'miferrac-expertdaysakscluster-miferrac-1613077274355'
                   namespace: 'miferrac'
                   strategy: 'canary'
-                  percentage: '$(strategy.increment)'
-                  manifests: $(Pipeline.Workspace)/helmBakedChart
+                  percentage: '50'
+                  manifests: '$(Pipeline.Workspace)/helmBakedChart'
                 displayName: deploy app updates
-            postRouteTraffic: 
-              pool: server
-              steps:
-              - task: Delay@1
-                inputs:
-                  delayForMinutes: '1'
-              - task: ManualValidation@0
-                condition: eq($(strategy.increment),'10')
-                inputs:
-                  notifyUsers: 'miferrac@microsoft.com'
-                  instructions: 'sdfg'
-            on: 
-              failure:
-                steps:
-                  - task: KubernetesManifest@0
-                    inputs:
-                      action: 'reject'
-                      kubernetesServiceConnection: 'miferrac-expertdaysakscluster-miferrac-1613077274355'
-                      namespace: 'miferrac'
-                      strategy: 'canary'
-                      manifests: '$(bake.manifestsBundle)'
-              success:
-                steps:
-                  - task: KubernetesManifest@0
-                    inputs:
-                      action: 'promote'
-                      kubernetesServiceConnection: 'miferrac-expertdaysakscluster-miferrac-1613077274355'
-                      namespace: 'miferrac'
-                      strategy: 'canary'
-                      manifests: '$(bake.manifestsBundle)'
+            # postRouteTraffic: 
+            #   pool: server
+            #   steps:
+            #   - task: Delay@1
+            #     inputs:
+            #       delayForMinutes: '1'
+            #   - task: ManualValidation@0
+            #     condition: eq($(strategy.increment),'10')
+            #     inputs:
+            #       notifyUsers: 'miferrac@microsoft.com'
+            #       instructions: 'sdfg'
+            # on: 
+            #   failure:
+            #     steps:
+            #       - task: KubernetesManifest@0
+            #         inputs:
+            #           action: 'reject'
+            #           kubernetesServiceConnection: 'miferrac-expertdaysakscluster-miferrac-1613077274355'
+            #           namespace: 'miferrac'
+            #           strategy: 'canary'
+            #           manifests: '$(bake.manifestsBundle)'
+            #   success:
+            #     steps:
+            #       - task: KubernetesManifest@0
+            #         inputs:
+            #           action: 'promote'
+            #           kubernetesServiceConnection: 'miferrac-expertdaysakscluster-miferrac-1613077274355'
+            #           namespace: 'miferrac'
+            #           strategy: 'canary'
+            #           manifests: '$(bake.manifestsBundle)'
