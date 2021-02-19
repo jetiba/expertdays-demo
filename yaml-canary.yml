@@ -61,6 +61,7 @@ stages:
             
               - script: cat $(Pipeline.Workspace)/helmBakedChart/baked-template.yaml
                 displayName: Fake Deployment
+              
               - task: KubernetesManifest@0
                 inputs:
                   action: 'deploy'
@@ -68,7 +69,7 @@ stages:
                   namespace: 'miferrac'
                   strategy: 'canary'
                   percentage: '50'
-                  manifests: '$(Pipeline.Workspace)/helmBakedChart/'
+                  manifests: '$(Pipeline.Workspace)/helmBakedChart/**'
                 displayName: deploy app updates
             # postRouteTraffic: 
             #   pool: server
