@@ -47,7 +47,7 @@ stages:
                   helmChart: samples/BikeSharingApp/ReservationEngine/charts/reservationengine
                   releaseName: 'miferrac-reservationEngine'
                   overrides: |
-                    image.repository:phenixita/reservationEngine 
+                    image.repository:phenixita/reservationEngine
                     image.tag:${{ parameters.buildInput }}
               - task: PublishPipelineArtifact@1
                 inputs:
