@@ -48,7 +48,7 @@ stages:
                   releaseName: 'miferrac-reservationEngine'
                   overrides: |
                     reservation.image.repository:phenixita/reservationEngine 
-                    reservation.image.tag:${{buildInput}}
+                    reservation.image.tag:${{ parameters.buildInput }}
               - task: PublishPipelineArtifact@1
                 inputs:
                   targetPath: $(bake.manifestsBundle)
