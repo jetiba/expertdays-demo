@@ -19,6 +19,8 @@ stages:
     - task: Docker@2
       displayName: Build an image
       inputs:
-        command: 'build'
+        containerRegistry: 'DockerHub-phenixita'
+        repository: 'phenixita'
+        command: 'buildAndPush'
         Dockerfile: 'samples/BikeSharingApp/ReservationEngine/**/Dockerfile'
         tags: '$(tag)'
