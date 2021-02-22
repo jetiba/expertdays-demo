@@ -2,7 +2,7 @@ trigger:
   none
 
 variables:
-- group: expertdays-vg
+- group: expertdays-vg-miferrac
 
 stages:
 - stage: Build
