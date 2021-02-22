@@ -37,10 +37,10 @@ namespace app
                 var totalHours = Math.Ceiling((endTime - startTime).TotalHours);
                 amount = totalHours * bikeDetails.HourlyCost;
 
-                if (DateTime.Now.Second % 2 == 0)
-                {
-                    throw new InvalidOperationException("demo: error every even second.");
-                }
+               // if (DateTime.Now.Second % 2 == 0)
+                //{
+                 //   throw new InvalidOperationException("demo: error every even second.");
+            //    }
             }
 
             var createInvoiceUrl = $"http://{_billingService}/api/invoice";
