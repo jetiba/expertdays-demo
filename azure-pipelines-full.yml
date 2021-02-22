@@ -2,7 +2,7 @@ trigger:
   none
 
 variables:
- - group: expertdays-vg-miferrac
+- group: expertdays-vg
 
 stages:
 - stage: Build
@@ -11,7 +11,7 @@ stages:
   - job: Build
     displayName: Build Container Images
     pool:
-      vmImage: 'ubuntu-18.04'
+      vmImage: 'ubuntu-latest'
     steps:
     - task: Docker@2
       inputs:
@@ -19,7 +19,7 @@ stages:
         repository: 'bikes'
         command: 'buildAndPush'
         Dockerfile: '**/samples/BikeSharingApp/Bikes/Dockerfile'
-      displayName: 'Build Docker Image'
+      displayName: 'Build Bikes Docker Image'
     
     - task: Docker@2
       inputs:
@@ -27,7 +27,7 @@ stages:
         repository: 'bikesharingweb'
         command: 'buildAndPush'
         Dockerfile: '**/samples/BikeSharingApp/BikeSharingWeb/Dockerfile'
-      displayName: 'Build Docker Image'
+      displayName: 'Build BikeSharingWeb Docker Image'
     
     - task: Docker@2
       inputs:
@@ -35,7 +35,7 @@ stages:
         repository: 'billing'
         command: 'buildAndPush'
         Dockerfile: '**/samples/BikeSharingApp/Billing/Dockerfile'
-      displayName: 'Build Docker Image'
+      displayName: 'Build Billing Docker Image'
     
     - task: Docker@2
       inputs:
@@ -43,7 +43,7 @@ stages:
         repository: 'gateway'
         command: 'buildAndPush'
         Dockerfile: '**/samples/BikeSharingApp/Gateway/Dockerfile'
-      displayName: 'Build Docker Image'
+      displayName: 'Build Gateway Docker Image'
 
     - task: Docker@2
       inputs:
@@ -51,7 +51,7 @@ stages:
         repository: 'populatedatabase'
         command: 'buildAndPush'
         Dockerfile: '**/samples/BikeSharingApp/PopulateDatabase/Dockerfile'
-      displayName: 'Build Docker Image'
+      displayName: 'Build PopulateDatabase Docker Image'
 
     - task: Docker@2
       inputs:
@@ -59,7 +59,7 @@ stages:
         repository: 'reservation'
         command: 'buildAndPush'
         Dockerfile: '**/samples/BikeSharingApp/Reservation/Dockerfile'
-      displayName: 'Build Docker Image'
+      displayName: 'Build Reservation Docker Image'
 
     - task: Docker@2
       inputs:
@@ -67,7 +67,15 @@ stages:
         repository: 'reservationengine'
         command: 'buildAndPush'
         Dockerfile: '**/samples/BikeSharingApp/ReservationEngine/Dockerfile'
-      displayName: 'Build Docker Image'
+      displayName: 'Build ReservationEngine Docker Image'
+
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'azureregistry'
+        repository: 'users'
+        command: 'buildAndPush'
+        Dockerfile: '**/samples/BikeSharingApp/Users/Dockerfile'
+      displayName: 'Build Users Docker Image'
 
 - stage: Deploy
   displayName: Deploy stage
@@ -76,11 +84,12 @@ stages:
     displayName: Deploy job
     environment: test
     pool:
-      name: 'ubuntu-18.04'
+      vmImage: 'ubuntu-latest'
     strategy:
       runOnce:
         deploy:
           steps:
+          - checkout: self
           - task: AzureCLI@1
             displayName: Deploy App to the Cluster
             inputs:
@@ -91,54 +100,55 @@ stages:
               inlineScript: |
                 az aks get-credentials -n $(AKS_CLUSTER_NAME) -g $(RESOURCE_GROUP_NAME)
 
-                helm dependency update samples/BikeSharingApp/charts
-                
+                pwd
+
                 echo "helm repo add && helm repo update"
                 helm repo add stable https://charts.helm.sh/stable
                 helm repo update
 
                 echo ""
                 echo "helm install traefik ingress controller"
-                helm install "bikesharing-traefik" stable/traefik \
-                  --namespace $CLUSTER_NAMESPACE --create-namespace \ 
+                helm upgrade "bikesharing-traefik" stable/traefik \
+                  --namespace $(CLUSTER_NAMESPACE) --create-namespace \
                   --set kubernetes.ingressClass=traefik \
                   --set fullnameOverride=bikesharing-traefik \
                   --set rbac.enabled=true \
                   --set kubernetes.ingressEndpoint.useDefaultPublishedService=true \
-                  --version 1.85.0 --debug
+                  --version 1.85.0 --install
 
                 echo ""
                 echo "Waiting for BikeSharing ingress Public IP to be assigned..."
                 while [ -z "$PUBLICIP" ]; do
                   sleep 5
-                  PUBLICIP=$(kubectl get svc -n $CLUSTER_NAMESPACE bikesharing-traefik -o jsonpath={.status.loadBalancer.ingress[0].ip})
-                
+                  PUBLICIP=$(kubectl get svc -n $(CLUSTER_NAMESPACE) bikesharing-traefik -o jsonpath={.status.loadBalancer.ingress[0].ip})
+                done
+
+                helm dependency update samples/BikeSharingApp/charts
+
                 echo ""
                 echo "Install applications in the cluster"
-                helm install bikesharingapp samples/BikeSharingApp/charts \
-                  --set bikesharingweb.ingress.hosts={$CLUSTER_NAMESPACE.bikesharingweb.$PUBLICIP.nip.io} \
-                  --set gateway.ingress.hosts={$CLUSTER_NAMESPACE.gateway.$PUBLICIP.nip.io} \
+                helm upgrade "bikesharingapp" samples/BikeSharingApp/charts \
+                  --set bikesharingweb.ingress.hosts={$(CLUSTER_NAMESPACE).bikesharingweb.$PUBLICIP.nip.io} \
+                  --set gateway.ingress.hosts={$(CLUSTER_NAMESPACE).gateway.$PUBLICIP.nip.io} \
                   --set bikesharingweb.ingress.annotations."kubernetes\.io/ingress\.class"=traefik \
                   --set gateway.ingress.annotations."kubernetes\.io/ingress\.class"=traefik \
-                  --set bikes.image.repository expertdaysregistry.azurecr.io/bikes 
-                  --set bikes.image.tag $(Build.BuildId)
-                  --set billing.image.repository expertdaysregistry.azurecr.io/billing 
-                  --set billing.image.tag $(Build.BuildId)
-                  --set gateway.image.repository expertdaysregistry.azurecr.io/gateway 
-                  --set gateway.image.tag $(Build.BuildId)
-                  --set reservation.image.repository expertdaysregistry.azurecr.io/reservation 
-                  --set reservation.image.tag $(Build.BuildId)
-                  --set users.image.repository expertdaysregistry.azurecr.io/users 
-                  --set users.image.tag $(Build.BuildId)
-                  --set reservationengine.image.repository expertdaysregistry.azurecr.io/reservationengine 
-                  --set reservationengine.image.tag $(Build.BuildId)
-                  --set populatedatabase.image.repository expertdaysregistry.azurecr.io/populatedatabase 
-                  --set populatedatabase.image.tag $(Build.BuildId)
-                  --set bikesharingweb.image.repository expertdaysregistry.azurecr.io/bikesharingweb 
-                  --set bikesharingweb.image.tag $(Build.BuildId)
-                  --dependency-update \
-                  --namespace $CLUSTER_NAMESPACE \
+                  --set bikes.image.repository=expertdaysregistry.azurecr.io/bikes \
+                  --set bikes.image.tag=$(Build.BuildId) \
+                  --set billing.image.repository=expertdaysregistry.azurecr.io/billing \
+                  --set billing.image.tag=$(Build.BuildId) \
+                  --set gateway.image.repository=expertdaysregistry.azurecr.io/gateway \
+                  --set gateway.image.tag=$(Build.BuildId) \
+                  --set reservation.image.repository=expertdaysregistry.azurecr.io/reservation \
+                  --set reservation.image.tag=$(Build.BuildId) \
+                  --set users.image.repository=expertdaysregistry.azurecr.io/users \
+                  --set users.image.tag=$(Build.BuildId) \
+                  --set reservationengine.image.repository=expertdaysregistry.azurecr.io/reservationengine \
+                  --set reservationengine.image.tag=$(Build.BuildId) \
+                  --set populatedatabase.image.repository=expertdaysregistry.azurecr.io/populatedatabase \
+                  --set populatedatabase.image.tag=$(Build.BuildId) \
+                  --set bikesharingweb.image.repository=expertdaysregistry.azurecr.io/bikesharingweb \
+                  --set bikesharingweb.image.tag=$(Build.BuildId) \
+                  --namespace $(CLUSTER_NAMESPACE) \
                   --timeout 9m \
-                  --atomic --debug
+                  --atomic --install
               workingDirectory: '$(System.DefaultWorkingDirectory)'
-
