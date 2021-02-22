@@ -64,7 +64,6 @@ stages:
               - task: KubernetesManifest@0
                 inputs:
                   action: 'deploy'
-                  kubernetesServiceConnection: 'miferrac-expertdaysakscluster-miferrac-1613077274355'
                   namespace: 'canarydemo'
                   strategy: 'canary'
                   percentage: '50'
@@ -84,7 +83,7 @@ stages:
       strategy:
         runOnce:
           deploy:
-            steps:            
+            steps:
             - task: KubernetesManifest@0
               displayName: promote canary
               inputs:
