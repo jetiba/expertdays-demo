@@ -111,7 +111,7 @@ stages:
                 helm upgrade "bikesharing-traefik-mf" stable/traefik \
                   --namespace $(CLUSTER_NAMESPACE) --create-namespace \
                   --set kubernetes.ingressClass=traefik \
-                  --set fullnameOverride=bikesharing-traefik \
+                  --set fullnameOverride=bikesharing-traefik-mf \
                   --set rbac.enabled=true \
                   --set kubernetes.ingressEndpoint.useDefaultPublishedService=true \
                   --version 1.85.0 --install
