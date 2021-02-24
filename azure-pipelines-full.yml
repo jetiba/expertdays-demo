@@ -87,7 +87,7 @@ stages:
   jobs:
   - deployment: Deploy
     displayName: Deploy job
-    environment: akse111.bikeapp
+    environment: experdaysaks.bikeapp-ns
     pool:
       vmImage: 'ubuntu-latest'
     strategy:
