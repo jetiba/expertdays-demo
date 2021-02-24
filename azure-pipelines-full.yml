@@ -4,7 +4,7 @@ trigger:
 parameters:
   - name: buildId
     type: number
-    default: 416
+    default: 376
 
 variables:
 - group: expertdays-vg-miferrac
@@ -98,7 +98,7 @@ stages:
           - task: AzureCLI@1
             displayName: Deploy App to the Cluster
             inputs:
-              azureSubscription: 'miferrac-service-conn'
+              azureSubscription: serviceprincipal
               scriptLocation: 'inlineScript'
               inlineScript: |
                 az aks get-credentials -n $(AKS_CLUSTER_NAME) -g $(RESOURCE_GROUP_NAME)
@@ -109,15 +109,15 @@ stages:
                 helm repo add stable https://charts.helm.sh/stable
                 helm repo update
                 
-                # echo ""
-                # echo "helm install traefik ingress controller"
-                # helm upgrade "bikesharing-traefik" stable/traefik \
-                #   --namespace $(CLUSTER_NAMESPACE) --create-namespace \
-                #   --set kubernetes.ingressClass=traefik \
-                #   --set fullnameOverride=bikesharing-traefik \
-                #   --set rbac.enabled=true \
-                #   --set kubernetes.ingressEndpoint.useDefaultPublishedService=true \
-                #   --version 1.85.0 --install
+                echo ""
+                echo "helm install traefik ingress controller"
+                helm upgrade "bikesharing-traefik" stable/traefik \
+                  --namespace $(CLUSTER_NAMESPACE) --create-namespace \
+                  --set kubernetes.ingressClass=traefik \
+                  --set fullnameOverride=bikesharing-traefik \
+                  --set rbac.enabled=true \
+                  --set kubernetes.ingressEndpoint.useDefaultPublishedService=true \
+                  --version 1.85.0 --install
                 
                 echo ""
                 echo "Waiting for BikeSharing ingress Public IP to be assigned..."
@@ -127,8 +127,6 @@ stages:
                 done
                 
                 echo ""
-                echo "$PUBLICIP"
-                echo $(CLUSTER_NAMESPACE)
 
                 helm dependency update samples/BikeSharingApp/charts
                 
