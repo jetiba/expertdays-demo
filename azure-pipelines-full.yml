@@ -126,8 +126,12 @@ stages:
                   PUBLICIP=$(kubectl get svc -n $(CLUSTER_NAMESPACE) bikesharing-traefik -o jsonpath={.status.loadBalancer.ingress[0].ip})
                 done
                 
+                echo ""
+                echo "$PUBLICIP"
+
                 helm dependency update samples/BikeSharingApp/charts
                 
+
                 echo ""
                 echo "Install applications in the cluster"
                 helm upgrade "bikesharingapp" samples/BikeSharingApp/charts \
