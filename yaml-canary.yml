@@ -64,6 +64,7 @@ stages:
               - task: KubernetesManifest@0
                 inputs:
                   action: 'deploy'
+                  kubernetesServiceConnection: 'experdaysaks-expertdaysakscluster-canarydemo-1614031660916'
                   namespace: 'canarydemo'
                   strategy: 'canary'
                   percentage: '50'
