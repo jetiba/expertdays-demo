@@ -7,6 +7,7 @@ trigger: none
 parameters:
   - name: buildInput
     type: number
+    default: 416
     
 variables:
   - template: .ci/yamlVariables.yml
