@@ -111,8 +111,8 @@ stages:
                   PUBLICIP=$(kubectl get svc -n $CLUSTER_NAMESPACE bikesharing-traefik -o jsonpath={.status.loadBalancer.ingress[0].ip})
                 
                 echo ""
-                echo "Install applications in the cluster"
-                helm install bikesharingapp samples/BikeSharingApp/charts \
+                echo "Bake"
+                helm template bikesharingapp samples/BikeSharingApp/charts \
                   --set bikesharingweb.ingress.hosts={$CLUSTER_NAMESPACE.bikesharingweb.$PUBLICIP.nip.io} \
                   --set gateway.ingress.hosts={$CLUSTER_NAMESPACE.gateway.$PUBLICIP.nip.io} \
                   --set bikesharingweb.ingress.annotations."kubernetes\.io/ingress\.class"=traefik \
@@ -136,6 +136,10 @@ stages:
                   --dependency-update \
                   --namespace $CLUSTER_NAMESPACE \
                   --timeout 9m \
-                  --atomic --debug
+                  --atomic --debug > myChart.yaml
+
+                echo ""
+                echo "Install applications in the cluster"
+                kubectl apply -f myChart.yaml
               workingDirectory: '$(System.DefaultWorkingDirectory)'
 
