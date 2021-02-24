@@ -136,10 +136,6 @@ stages:
                   --dependency-update \
                   --namespace $CLUSTER_NAMESPACE \
                   --timeout 9m \
-                  --atomic --debug > myChart.yaml
-
-                echo ""
-                echo "Install applications in the cluster"
-                kubectl apply -f myChart.yaml
+                  --atomic --debug > myChart.yaml 
               workingDirectory: '$(System.DefaultWorkingDirectory)'
 
