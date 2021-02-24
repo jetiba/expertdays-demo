@@ -121,12 +121,12 @@ stages:
                 #   --set kubernetes.ingressEndpoint.useDefaultPublishedService=true \
                 #   --version 1.85.0 --install
 
-                # echo ""
-                # echo "Waiting for BikeSharing ingress Public IP to be assigned..."
-                # while [ -z "$PUBLICIP" ]; do
-                #   sleep 5
-                #   PUBLICIP=$(kubectl get svc -n $(CLUSTER_NAMESPACE) bikesharing-traefik-mf -o jsonpath={.status.loadBalancer.ingress[0].ip})
-                # done
+                echo ""
+                echo "Waiting for BikeSharing ingress Public IP to be assigned..."
+                while [ -z "$PUBLICIP" ]; do
+                  sleep 5
+                  PUBLICIP=$(kubectl get svc -n $(CLUSTER_NAMESPACE) bikesharing-traefik-mf -o jsonpath={.status.loadBalancer.ingress[0].ip})
+                done
 
                 helm dependency update samples/BikeSharingApp/charts
 
