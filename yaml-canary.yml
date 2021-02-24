@@ -19,7 +19,7 @@ stages:
     displayName: Deploy canary
     jobs:
       - deployment: Deploycanary
-        environment: experdaysaks.canarydemo
+        environment: akse111.bikeapp
         displayName: Canary Deployment
         strategy:
           runOnce:
@@ -80,7 +80,7 @@ stages:
       displayName: Promote Canary
       pool: 
         vmImage: Ubuntu-latest
-      environment: 'experdaysaks.canarydemo'
+      environment: 'akse111.bikeapp'
       strategy:
         runOnce:
           deploy:
@@ -102,7 +102,7 @@ stages:
       displayName: Reject Canary
       pool: 
         vmImage: Ubuntu-latest
-      environment: 'experdaysaks.canarydemo'
+      environment: 'akse111.bikeapp'
       strategy:
         runOnce:
           deploy:
