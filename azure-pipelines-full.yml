@@ -128,6 +128,7 @@ stages:
                 
                 echo ""
                 echo "$PUBLICIP"
+                echo $(CLUSTER_NAMESPACE)
 
                 helm dependency update samples/BikeSharingApp/charts
                 
@@ -140,21 +141,21 @@ stages:
                   --set bikesharingweb.ingress.annotations."kubernetes\.io/ingress\.class"=traefik \
                   --set gateway.ingress.annotations."kubernetes\.io/ingress\.class"=traefik \
                   --set bikes.image.repository=expertdaysregistry.azurecr.io/bikes \
-                  --set bikes.image.tag={{ parameters.buildId }} \
+                  --set bikes.image.tag=${{ parameters.buildId }} \
                   --set billing.image.repository=expertdaysregistry.azurecr.io/billing \
-                  --set billing.image.tag={{ parameters.buildId }} \
+                  --set billing.image.tag=${{ parameters.buildId }} \
                   --set gateway.image.repository=expertdaysregistry.azurecr.io/gateway \
-                  --set gateway.image.tag={{ parameters.buildId }} \
+                  --set gateway.image.tag=${{ parameters.buildId }} \
                   --set reservation.image.repository=expertdaysregistry.azurecr.io/reservation \
-                  --set reservation.image.tag={{ parameters.buildId }} \
+                  --set reservation.image.tag=${{ parameters.buildId }} \
                   --set users.image.repository=expertdaysregistry.azurecr.io/users \
-                  --set users.image.tag={{ parameters.buildId }} \
+                  --set users.image.tag=${{ parameters.buildId }} \
                   --set reservationengine.image.repository=expertdaysregistry.azurecr.io/reservationengine \
-                  --set reservationengine.image.tag={{ parameters.buildId }} \
+                  --set reservationengine.image.tag=${{ parameters.buildId }} \
                   --set populatedatabase.image.repository=expertdaysregistry.azurecr.io/populatedatabase \
-                  --set populatedatabase.image.tag={{ parameters.buildId }} \
+                  --set populatedatabase.image.tag=${{ parameters.buildId }} \
                   --set bikesharingweb.image.repository=expertdaysregistry.azurecr.io/bikesharingweb \
-                  --set bikesharingweb.image.tag={{ parameters.buildId }} \
+                  --set bikesharingweb.image.tag=${{ parameters.buildId }} \
                   --namespace $(CLUSTER_NAMESPACE) \
                   --timeout 9m \
                   --atomic --install
