@@ -133,7 +133,7 @@ stages:
 
                 echo ""
                 echo "Install applications in the cluster"
-                helm upgrade "bikesharingapp-mf" samples/BikeSharingApp/charts \
+                helm template "bikesharingapp-mf" samples/BikeSharingApp/charts \
                   --set bikesharingweb.ingress.hosts={$(CLUSTER_NAMESPACE).bikesharingweb.$PUBLICIP.nip.io} \
                   --set gateway.ingress.hosts={$(CLUSTER_NAMESPACE).gateway.$PUBLICIP.nip.io} \
                   --set bikesharingweb.ingress.annotations."kubernetes\.io/ingress\.class"=traefik \
@@ -154,8 +154,8 @@ stages:
                   --set populatedatabase.image.tag=${{ parameters.buildId }} \
                   --set bikesharingweb.image.repository=expertdaysregistry.azurecr.io/bikesharingweb \
                   --set bikesharingweb.image.tag=${{ parameters.buildId }} \
-                  --namespace $(CLUSTER_NAMESPACE) \
-                  --timeout 9m \
-                  --atomic --install
+                  --namespace $(CLUSTER_NAMESPACE) > baked.yaml
+                
+                kubectl apply -f baked.yaml
               addSpnToEnvironment: true
               workingDirectory: '$(System.DefaultWorkingDirectory)'
