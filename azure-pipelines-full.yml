@@ -111,10 +111,10 @@ stages:
                 
                 echo ""
                 echo "helm install traefik ingress controller"
-                helm upgrade "bikesharing-traefik" stable/traefik \
+                helm upgrade "bikesharing-traefik-mf" stable/traefik \
                   --namespace $(CLUSTER_NAMESPACE) --create-namespace \
                   --set kubernetes.ingressClass=traefik \
-                  --set fullnameOverride=bikesharing-traefik \
+                  --set fullnameOverride=bikesharing-traefik-mf \
                   --set rbac.enabled=true \
                   --set kubernetes.ingressEndpoint.useDefaultPublishedService=true \
                   --version 1.85.0 --install
@@ -123,7 +123,7 @@ stages:
                 echo "Waiting for BikeSharing ingress Public IP to be assigned..."
                 while [ -z "$PUBLICIP" ]; do
                   sleep 5
-                  PUBLICIP=$(kubectl get svc -n $(CLUSTER_NAMESPACE) bikesharing-traefik -o jsonpath={.status.loadBalancer.ingress[0].ip})
+                  PUBLICIP=$(kubectl get svc -n $(CLUSTER_NAMESPACE) bikesharing-traefik-mf -o jsonpath={.status.loadBalancer.ingress[0].ip})
                 done
                 
                 echo ""
@@ -133,7 +133,7 @@ stages:
 
                 echo ""
                 echo "Install applications in the cluster"
-                helm upgrade "bikesharingapp" samples/BikeSharingApp/charts \
+                helm upgrade "bikesharingapp-mf" samples/BikeSharingApp/charts \
                   --set bikesharingweb.ingress.hosts={$(CLUSTER_NAMESPACE).bikesharingweb.$PUBLICIP.nip.io} \
                   --set gateway.ingress.hosts={$(CLUSTER_NAMESPACE).gateway.$PUBLICIP.nip.io} \
                   --set bikesharingweb.ingress.annotations."kubernetes\.io/ingress\.class"=traefik \
