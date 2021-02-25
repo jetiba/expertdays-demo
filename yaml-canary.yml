@@ -32,7 +32,7 @@ stages:
                   strategy: 'canary'
                   percentage: '30'
                   manifests: '$(Pipeline.Workspace)/**/reservationEngine-deployment.yaml'
-                  containers: 'docker.io/phenixita/reservationengine:${{parameters.buildId}}'
+                  containers: 'docker.io/phenixita/reservationengine:${{parameters.buildInput}}'
                 displayName: deploy app updates
   - stage: PromoteRejectCanary
     displayName: Promote or Reject canary
@@ -55,7 +55,7 @@ stages:
                 action: 'promote'
                 strategy: 'canary'
                 manifests: '$(Pipeline.Workspace)/**/reservationEngine-deployment.yaml'
-                containers: 'docker.io/phenixita/reservationengine:${{parameters.buildId}}'
+                containers: 'docker.io/phenixita/reservationengine:${{parameters.buildInput}}'
 
   - stage: RejectCanary
     displayName: Reject canary
