@@ -14,6 +14,7 @@ namespace app
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -50,6 +51,7 @@ namespace app
             );
             
             services.Configure<CustomConfiguration>(Configuration.GetSection("CustomConfiguration"));
+            services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_CONNECTIONSTRING"]);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
