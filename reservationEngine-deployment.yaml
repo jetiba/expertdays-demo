@@ -46,7 +46,7 @@ spec:
             secretKeyRef:
               key: dbname
               name: reservationengine-mongo
-        image: azdspublic/bikesharing-reservationengine:build.20200629.1
+        image: docker.io/phenixita/reservationengine:latest
         imagePullPolicy: IfNotPresent
         name: reservationengine
         ports:
