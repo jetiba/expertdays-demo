@@ -36,6 +36,9 @@ namespace app.Controllers
         public async Task<IActionResult> GetBike(string bikeId)
         {
             string getBikeUrl = $"http://{_bikesService}/api/bikes/{bikeId}";
+
+            throw new NotImplementedException("demo");
+
             var response = await HttpHelper.GetAsync(getBikeUrl, this.Request);
             if (response.IsSuccessStatusCode)
             {
