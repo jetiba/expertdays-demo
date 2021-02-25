@@ -1,8 +1,8 @@
-# https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/kubernetes/deployment-strategies?view=azure-devops#canary-deployments-for-kubernetes
-# https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/kubernetes/bake?view=azure-devops
-# https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/deploy/kubernetes-manifest?view=azure-devops 
-# end-to-end https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/kubernetes/canary-demo?view=azure-devops&tabs=yaml 
 trigger: none
+
+resources:
+  repositories:
+    - repository: self
 
 parameters:
   - name: buildInput
@@ -20,56 +20,19 @@ stages:
     displayName: Deploy canary
     jobs:
       - deployment: Deploycanary
-        environment: experdaysaks.bikeapp-ns
+        environment: expertcluster.bikeapp
         displayName: Canary Deployment
         strategy:
           runOnce:
-            preDeploy:
-              steps:
-              - checkout: self
-              
-              # https://stackoverflow.com/questions/59210148/error-found-in-chart-yaml-but-missing-in-charts-directory-mysql
-              - script: |
-                  helm dependency update samples/BikeSharingApp/charts
-                  
-                  echo "helm repo add && helm repo update"
-                  helm repo add stable https://charts.helm.sh/stable
-                  helm repo update
-                workingDirectory: '$(System.DefaultWorkingDirectory)'
-                displayName: help setup 
-
-              - task: KubernetesManifest@0
-                name: bake # important, to be referenced later.
-                displayName: bake helm chart
-                inputs:
-                  action: 'bake'
-                  helmChart: samples/BikeSharingApp/ReservationEngine/charts/reservationengine
-                  releaseName: 'miferrac-reservationEngine'
-                  overrides: |
-                    image.repository:phenixita/reservationengine
-                    image.tag:${{ parameters.buildInput }}
-              - task: PublishPipelineArtifact@1
-                inputs:
-                  targetPath: $(bake.manifestsBundle)
-                  artifact: 'helmBakedChart'
-                  publishLocation: 'pipeline'
             deploy:
-              steps:
-              # - script:  mv baked-template*.yaml baked-template.yaml
-              #   workingDirectory: $(Pipeline.Workspace)/helmBakedChart/
-              #   displayName: Rename baked chart
-            
-              # - script: cat $(Pipeline.Workspace)/helmBakedChart/baked-template.yaml
-              #   displayName: Fake Deployment
-              
+              steps: 
               - task: KubernetesManifest@0
                 inputs:
                   action: 'deploy'
-                  # kubernetesServiceConnection: 'experdaysaks-expertdaysakscluster-canarydemo-1614031660916'
-                  # namespace: 'canarydemo'
                   strategy: 'canary'
-                  percentage: '50'
-                  manifests: '$(Pipeline.Workspace)/helmBakedChart/**'
+                  percentage: '30'
+                  manifests: '$(Pipeline.Workspace)/**/reservationEngine-deployment.yaml'
+                  containers: 'docker.io/phenixita/reservationengine:${{parameters.buildId}}'
                 displayName: deploy app updates
   - stage: PromoteRejectCanary
     displayName: Promote or Reject canary
@@ -81,7 +44,7 @@ stages:
       displayName: Promote Canary
       pool: 
         vmImage: Ubuntu-latest
-      environment: 'experdaysaks.bikeapp-ns'
+      environment: 'expertcluster.bikeapp'
       strategy:
         runOnce:
           deploy:
@@ -91,7 +54,8 @@ stages:
               inputs:
                 action: 'promote'
                 strategy: 'canary'
-                manifests: '$(Pipeline.Workspace)/helmBakedChart/**'
+                manifests: '$(Pipeline.Workspace)/**/reservationEngine-deployment.yaml'
+                containers: 'docker.io/phenixita/reservationengine:${{parameters.buildId}}'
 
   - stage: RejectCanary
     displayName: Reject canary
@@ -103,7 +67,7 @@ stages:
       displayName: Reject Canary
       pool: 
         vmImage: Ubuntu-latest
-      environment: 'experdaysaks.bikeapp-ns'
+      environment: 'expertcluster.bikeapp'
       strategy:
         runOnce:
           deploy:
@@ -113,4 +77,4 @@ stages:
               inputs:
                 action: 'reject'
                 strategy: 'canary'
-                manifests: '$(Pipeline.Workspace)/helmBakedChart/**'
+                manifests: '$(Pipeline.Workspace)/**/reservationEngine-deployment.yaml'
