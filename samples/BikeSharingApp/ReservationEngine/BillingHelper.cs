@@ -36,11 +36,6 @@ namespace app
             {
                 var totalHours = Math.Ceiling((endTime - startTime).TotalHours);
                 amount = totalHours * bikeDetails.HourlyCost;
-
-                if (bikeDetails.HourlyCost == 2)
-                {
-                    throw new InvalidOperationException("demo: error.");
-                }
             }
 
             var createInvoiceUrl = $"http://{_billingService}/api/invoice";
