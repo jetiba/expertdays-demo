@@ -1,8 +1,6 @@
 trigger: none
 
-resources:
-  repositories:
-    - repository: self
+ 
 
 parameters:
   - name: buildInput
@@ -25,7 +23,8 @@ stages:
         strategy:
           runOnce:
             deploy:
-              steps: 
+              steps:
+              - checkout: self
               - task: KubernetesManifest@0
                 inputs:
                   action: 'deploy'
