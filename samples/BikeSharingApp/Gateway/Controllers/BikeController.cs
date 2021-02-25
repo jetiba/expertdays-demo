@@ -37,7 +37,7 @@ namespace app.Controllers
         {
             string getBikeUrl = $"http://{_bikesService}/api/bikes/{bikeId}";
 
-            throw new NotImplementedException("demo");
+            System.Threading.Thread.Sleep(1000); //Algoritmo poco efficente...
 
             var response = await HttpHelper.GetAsync(getBikeUrl, this.Request);
             if (response.IsSuccessStatusCode)
