@@ -29,8 +29,8 @@ stages:
                   action: 'deploy'
                   strategy: 'canary'
                   percentage: '30'
-                  manifests: '$(Pipeline.Workspace)/**/reservationEngine-deployment.yaml'
-                  containers: 'docker.io/phenixita/reservationengine:${{parameters.buildInput}}'
+                  manifests: '$(Pipeline.Workspace)/**/gateway-deployment.yaml'
+                  containers: 'docker.io/phenixita/gateway:${{parameters.buildInput}}'
                 displayName: deploy app updates
   - stage: PromoteRejectCanary
     displayName: Promote or Reject canary
@@ -53,8 +53,8 @@ stages:
               inputs:
                 action: 'promote'
                 strategy: 'canary'
-                manifests: '$(Pipeline.Workspace)/**/reservationEngine-deployment.yaml'
-                containers: 'docker.io/phenixita/reservationengine:${{parameters.buildInput}}'
+                manifests: '$(Pipeline.Workspace)/**/gateway-deployment.yaml'
+                containers: 'docker.io/phenixita/gateway:${{parameters.buildInput}}'
 
   - stage: RejectCanary
     displayName: Reject canary
@@ -77,4 +77,4 @@ stages:
               inputs:
                 action: 'reject'
                 strategy: 'canary'
-                manifests: '$(Pipeline.Workspace)/**/reservationEngine-deployment.yaml'
+                manifests: '$(Pipeline.Workspace)/**/gateway-deployment.yaml'
