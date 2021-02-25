@@ -28,6 +28,9 @@ namespace app
         public static async Task<BillingResponse> CreateInvoice(Guid requestId, Reservation reservationDetails, HttpRequest originRequest)
         {
             LogUtility.LogWithContext(requestId, "Creating an invoice");
+
+            throw new InvalidOperationException("demo effect");
+
             var bikeDetails = await BikesHelper.GetBike(requestId, reservationDetails.BikeId, originRequest);
             var startTime = DateTime.ParseExact(reservationDetails.StartTime, DateTimeFormat, null);
             var endTime = DateTime.ParseExact(reservationDetails.EndTime, DateTimeFormat, null);
