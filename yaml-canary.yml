@@ -1,6 +1,8 @@
-trigger: none
-
- 
+resources:
+  pipelines:
+  - pipeline: gatewayCI 
+    source: gateway.CI
+    trigger: true
 
 parameters:
   - name: buildInput
