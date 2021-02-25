@@ -1,4 +1,10 @@
-trigger: none
+trigger:
+  branches:
+    include:
+      - miferrac
+  paths:
+    include:
+      - samples/BikeSharingApp/Gateway/*
 
 resources:
 - repo: self
@@ -25,3 +31,9 @@ stages:
         Dockerfile: 'samples/BikeSharingApp/Gateway/**/Dockerfile'
         tags: '$(tag)'
 
+
+# Docker
+# Build a Docker image
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+ 
