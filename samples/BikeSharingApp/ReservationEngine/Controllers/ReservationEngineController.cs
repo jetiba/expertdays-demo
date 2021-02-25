@@ -49,6 +49,9 @@ namespace app.Controllers
         private static async Task _createBooking(Guid requestId, Reservation reservationDetails, HttpRequest originRequest)
         {
             LogUtility.LogWithContext(requestId, "Creating a booking");
+
+            throw new InvalidOperationException("demo");
+
             reservationDetails.EndTime = string.Empty;
 
             var createBookingResponse = await BikesHelper.ReserveBike(requestId, reservationDetails.BikeId, originRequest);
