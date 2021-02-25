@@ -156,6 +156,6 @@ stages:
                   --set bikesharingweb.image.tag=${{ parameters.buildId }} \
                   --namespace $(CLUSTER_NAMESPACE) > baked.yaml
                 
-                kubectl apply -f baked.yaml
+                kubectl apply -f baked.yaml -n bikeapp-ns
               addSpnToEnvironment: true
               workingDirectory: '$(System.DefaultWorkingDirectory)'
