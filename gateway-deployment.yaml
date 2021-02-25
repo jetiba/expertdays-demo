@@ -44,7 +44,7 @@ spec:
             secretKeyRef:
               key: dnsname
               name: gateway-users
-        image: phenixita/gateway:latest
+        image: docker.io/phenixita/gateway:latest
         imagePullPolicy: IfNotPresent
         name: gateway
         ports:
