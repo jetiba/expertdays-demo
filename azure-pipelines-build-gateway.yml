@@ -1,0 +1,27 @@
+trigger: none
+
+resources:
+- repo: self
+
+variables:
+  tag: '$(Build.BuildId)'
+
+stages:
+- stage: Build
+  displayName: Build image
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+
+    - task: Docker@2
+      displayName: Build an image
+      inputs:
+        containerRegistry: 'DockerHub-phenixita'
+        repository: 'phenixita/gateway'
+        command: 'buildAndPush'
+        Dockerfile: 'samples/BikeSharingApp/Gateway/**/Dockerfile'
+        tags: '$(tag)'
+

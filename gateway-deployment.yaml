@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: gateway
+  name: gateway
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: gateway
+      release: bikesharingapp
+  template:
+    metadata:
+      labels:
+        app: gateway
+        draft: draft-app
+        release: bikesharingapp
+    spec:
+      containers:
+      - env:
+        - name: bikes_dnsname
+          valueFrom:
+            secretKeyRef:
+              key: dnsname
+              name: gateway-bikes
+        - name: billing_dnsname
+          valueFrom:
+            secretKeyRef:
+              key: dnsname
+              name: gateway-billing
+        - name: reservation_dnsname
+          valueFrom:
+            secretKeyRef:
+              key: dnsname
+              name: gateway-reservation
+        - name: reservationengine_dnsname
+          valueFrom:
+            secretKeyRef:
+              key: dnsname
+              name: gateway-reservationengine
+        - name: users_dnsname
+          valueFrom:
+            secretKeyRef:
+              key: dnsname
+              name: gateway-users
+        image: docker.io/phenixita/gateway:latest
+        imagePullPolicy: IfNotPresent
+        name: gateway
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
