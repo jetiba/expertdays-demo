@@ -37,9 +37,9 @@ namespace app
                 var totalHours = Math.Ceiling((endTime - startTime).TotalHours);
                 amount = totalHours * bikeDetails.HourlyCost;
 
-                if (DateTime.Now.Second % 2 == 0)
+                if (bikeDetails.HourlyCost == 2)
                 {
-                    throw new InvalidOperationException("demo: error every even second.");
+                    throw new InvalidOperationException("demo: error.");
                 }
             }
 
