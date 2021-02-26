@@ -37,7 +37,7 @@ namespace app.Controllers
         {
             string getBikeUrl = $"http://{_bikesService}/api/bikes/{bikeId}";
 
-            System.Threading.Thread.Sleep(1000); //Algoritmo poco efficente...
+            throw new InvalidOperationException("demo expert days");
 
             var response = await HttpHelper.GetAsync(getBikeUrl, this.Request);
             if (response.IsSuccessStatusCode)
